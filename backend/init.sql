@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS prompts (
-  id SERIAL PRIMARY KEY, /*id is the day and is an identifier for each prompt*/
+  id INT PRIMARY KEY, /*id is the day and is an identifier for each prompt*/
   text TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

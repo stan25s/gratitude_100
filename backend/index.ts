@@ -31,6 +31,35 @@ const server = http.createServer(async (req, res) => {
       return
     }
 
+    if (req.url === '/prompts' && req.method === 'POST') {
+      let body = ''
+      req.on('data', (chunk) => (body += chunk.toString()))
+      req.on('end', async () => {
+        try {
+          const { id, text } = JSON.parse(body)
+
+          if (!id || !text) {
+            res.writeHead(400, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({ error: 'id_and_text_required' }))
+            return
+          }
+
+          const upsertPrompt = await pool.query(
+            'INSERT INTO prompts (id, text) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET text = EXCLUDED.text RETURNING id, text, created_at',
+            [id, text]
+          )
+
+          res.writeHead(200, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify(upsertPrompt.rows[0]))
+        } catch (err) {
+          console.error(err)
+          res.writeHead(500, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ error: 'internal_error' }))
+        }
+      })
+      return
+    }
+
     if (req.url === "/entries" && req.method === "POST") {
       let body = ""
       req.on("data", (chunk) => (body += chunk.toString()))

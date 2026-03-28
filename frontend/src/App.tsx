@@ -25,7 +25,7 @@ useEffect(() => {
   async function fetchPromptForUser() {
     try {
       const userID = "1";
-      const response = await fetch(backend api);
+      const response = await fetch('http://ronin-1:4000/prompts/next/' + userID);
       if (!response.ok) throw new Error('Failed to fetch prompts');
       const data = await response.json();
       setLeftCardPrompts(data.prompt);

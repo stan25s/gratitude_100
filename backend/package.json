@@ -2,13 +2,14 @@
   "name": "gratitude_100-backend",
   "version": "1.0.0",
   "description": "Backend for Gratitude 100",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "ts-node index.ts",
+    "dev": "ts-nodemon index.ts"
   },
   "dependencies": {
-    "pg": "^8.11.0"
+    "pg": "^8.11.0",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"

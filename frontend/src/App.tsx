@@ -14,6 +14,7 @@ import {
 export default function Page() {
   return (
     <Box textAlign="center" fontSize="xl" pt="30vh">
+      <Heading>Gratitude 100!</Heading>
     </Box>
   )
 }

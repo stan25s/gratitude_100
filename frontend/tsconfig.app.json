@@ -8,7 +8,7 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["./frontend/src/*"]
+      "@/*": ["./src/*"]
     },
 
     /* Bundler mode */
@@ -27,5 +27,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["frontend/src"]
+  "include": ["src"]
 }

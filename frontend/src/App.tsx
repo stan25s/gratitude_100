@@ -14,10 +14,46 @@ import {
   Textarea
 } from "@chakra-ui/react"
 
+import { useState, useEffect } from "react";
+
+const [prompts, setPrompts] = useState([]);
+const [leftCardPrompts, setLeftCardPrompts] = useState(null);
+
 const pngImages = import.meta.glob('./assets/*.png', { eager: true, import: 'default' })
 
+useEffect(() => {
+  async function fetchPromptForUser() {
+    try {
+      const userID = "1";
+      const response = await fetch(backend api);
+      if (!response.ok) throw new Error('Failed to fetch prompts');
+      const data = await response.json();
+      setLeftCardPrompts(data.prompt);
+    } catch (error) {
+      console.error("Error fetching prompts:", error);
+    }
+  }
+fetchPromptForUser();
+}, []);
 export default function Page() {
   const backgroundImage = pngImages['./assets/Background day 1 - 15.png'];
+  const [leftCardText, setLeftCardText] = useState("");
+  async function handleSubmit() {
+    try {
+      const response = await fetch('http://ronin-1:4000/entries', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: leftCardText })
+      });
+      if (response.ok) throw new Error('Failed to submit reflection');
+
+      alert("Reflection submitted successfully!");
+      setLeftCardText("");
+    } catch (error) {
+      console.error("Error submitting reflection:", error);
+      alert("Error submitting reflection.");
+    }
+  }
 
   return (
     <Box 
@@ -25,7 +61,7 @@ export default function Page() {
         fontSize="xl" 
         minH ="100vh" 
         display="flex" 
-        justifyContent="flex-start"
+        justifyContent="space-between"
         px="25px"
         py="25px"
         bgImage={backgroundImage ? `url(${backgroundImage})` : undefined}
@@ -33,11 +69,12 @@ export default function Page() {
         bgRepeat="no-repeat"
         bgPosition="center"
        > 
+       {/* left card*/}
       <Card.Root
         borderRadius="md"
         bg="whiteAlpha.800"
         textAlign="center"
-        width="50%"
+        width="48%"
         height="100vh"
         color="black"
         fontFamily="'Patrick Hand', cursive"
@@ -48,7 +85,8 @@ export default function Page() {
           }
         }}
       > 
-        <Card.Header> Temp text for before backend connection </Card.Header>
+        <Card.Header> 
+          {leftCardPrompts ? leftCardPrompts : "Loading Prompt..."} </Card.Header>
         <Field.Root 
           display="flex"
           flexDirection="column"
@@ -59,8 +97,26 @@ export default function Page() {
             size="lg"
             height="200px"
             width="80%"
+            value={leftCardText}
+            onChange={(e) => setLeftCardText(e.target.value)}
           />
+          <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
+            Submit 
+          </Button>  
         </Field.Root>
+        </Card.Root>
+
+          {/* right card*/}
+        <Card.Root
+        borderRadius="md"
+        bg="whiteAlpha.800"
+        textAlign="center"
+        width="48%"
+        height="100vh"
+        color="black"
+        fontFamily="'Patrick Hand', cursive"
+        >
+          <Card.Header> Your previous entries </Card.Header>
         </Card.Root>
       </Box>
   )

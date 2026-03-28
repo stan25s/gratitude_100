@@ -24,6 +24,74 @@ const server = http.createServer(async (req, res) => {
       return
     }
 
+    if (req.url?.startsWith('/prompts/next/') && req.method === 'GET') {
+      const userId = Number(req.url.split('/')[3])
+      if (!Number.isInteger(userId) || userId <= 0) {
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'invalid_user_id' }))
+        return
+      }
+
+      const userRes = await pool.query('SELECT day_count FROM users WHERE id = $1', [userId])
+      if (userRes.rows.length === 0) {
+        res.writeHead(404, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'user_not_found' }))
+        return
+      }
+
+      const nextPromptId = userRes.rows[0].day_count + 1
+      const promptRes = await pool.query('SELECT id, text, created_at FROM prompts WHERE id = $1', [nextPromptId])
+      if (promptRes.rows.length === 0) {
+        res.writeHead(404, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'next_prompt_not_found' }))
+        return
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify(promptRes.rows[0]))
+      return
+    }
+
+    if (req.url?.startsWith('/prompts/') && req.method === 'GET') {
+      const promptId = Number(req.url.split('/')[2])
+      if (!Number.isInteger(promptId) || promptId <= 0) {
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'invalid_prompt_id' }))
+        return
+      }
+
+      const result = await pool.query('SELECT id, text, created_at FROM prompts WHERE id = $1', [promptId])
+      if (result.rows.length === 0) {
+        res.writeHead(404, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'prompt_not_found' }))
+        return
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify(result.rows[0]))
+      return
+    }
+
+    if (req.url?.startsWith('/prompts/') && req.method === 'GET') {
+      const promptId = Number(req.url.split('/')[2])
+      if (!Number.isInteger(promptId) || promptId <= 0) {
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'invalid_prompt_id' }))
+        return
+      }
+
+      const result = await pool.query('SELECT id, text, created_at FROM prompts WHERE id = $1', [promptId])
+      if (result.rows.length === 0) {
+        res.writeHead(404, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'prompt_not_found' }))
+        return
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify(result.rows[0]))
+      return
+    }
+
     if (req.url === '/prompts' && req.method === 'GET') {
       const result = await pool.query('SELECT * FROM prompts ORDER BY id ASC')
       res.writeHead(200, { 'Content-Type': 'application/json' })
@@ -151,6 +219,34 @@ const server = http.createServer(async (req, res) => {
       const result = await pool.query('SELECT id, name, day_count, created_at FROM users ORDER BY id ASC')
       res.writeHead(200, { 'Content-Type': 'application/json' })
       res.end(JSON.stringify(result.rows))
+      return
+    }
+
+    if (req.url?.startsWith('/prompts/next/') && req.method === 'GET') {
+      const userId = Number(req.url.split('/')[3])
+      if (!Number.isInteger(userId) || userId <= 0) {
+        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'invalid_user_id' }))
+        return
+      }
+
+      const userRes = await pool.query('SELECT day_count FROM users WHERE id = $1', [userId])
+      if (userRes.rows.length === 0) {
+        res.writeHead(404, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'user_not_found' }))
+        return
+      }
+
+      const nextPromptId = userRes.rows[0].day_count + 1
+      const promptRes = await pool.query('SELECT id, text, created_at FROM prompts WHERE id = $1', [nextPromptId])
+      if (promptRes.rows.length === 0) {
+        res.writeHead(404, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ error: 'next_prompt_not_found' }))
+        return
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify(promptRes.rows[0]))
       return
     }
 
